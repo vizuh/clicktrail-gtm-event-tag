@@ -105,3 +105,6 @@ dataLayer.push({
 });
 
 if (data.debug) log('ClickTrail event pushed:', payload);
+
+// Signal successful tag completion to GTM.
+data.gtmOnSuccess();
