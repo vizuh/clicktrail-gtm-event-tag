@@ -1,7 +1,6 @@
 homepage: "https://github.com/vizuh/clicktrail-gtm-event-tag"
 documentation: "https://github.com/vizuh/clicktrail-gtm-event-tag#readme"
 versions:
-  # Version 1 - replace "sha" with the commit SHA of this version before
-  # submitting to the Community Template Gallery (git rev-parse HEAD).
-  - sha: 0000000000000000000000000000000000000000
+  # Version 1
+  - sha: 52537735d6bb29855c710fbab8b5d1576da9d9a8
     changeNotes: Initial release.
