@@ -2,5 +2,5 @@ homepage: "https://github.com/vizuh/clicktrail-gtm-event-tag"
 documentation: "https://github.com/vizuh/clicktrail-gtm-event-tag#readme"
 versions:
   # Version 1
-  - sha: 52537735d6bb29855c710fbab8b5d1576da9d9a8
+  - sha: d068b86c72ddd6da1e2cf21c8fee2bfe5bfdb0c4
     changeNotes: Initial release.
