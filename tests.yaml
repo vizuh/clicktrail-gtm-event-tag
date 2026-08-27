@@ -1,3 +1,16 @@
 # Mirror of the ___TESTS___ section in template.tpl (Stape GTMS-5).
-# Keep both in sync; add scenarios here as the template matures.
-scenarios: []
+# Keep both in sync.
+scenarios:
+- name: Legacy event names normalize before the dataLayer push
+  code: |-
+    let pushed;
+    mock('createQueue', () => ({ push: value => { pushed = value; } }));
+
+    runCode({
+      siteId: 'site-1',
+      eventName: 'sale.completed',
+      includePageData: false,
+      gtmOnSuccess: () => {}
+    });
+
+    assertThat(pushed.clicktrail_event.event.name).isEqualTo('sale');

@@ -49,7 +49,7 @@ ___TEMPLATE_PARAMETERS___
     "name": "eventName",
     "displayName": "Event Name",
     "simpleValueType": true,
-    "help": "Canonical ClickTrail event names: lead.submitted, appointment.booked, appointment.attended, sale.completed, sale.refunded. Any custom name is accepted.",
+    "help": "Canonical ClickTrail event names: page_view, form_started, lead_created, lead_qualified, booking_created, booking_completed, sale, refund, consent_updated. Legacy and custom names are accepted.",
     "valueHint": "{{DLV - event name}}",
     "valueValidators": [
       { "type": "NON_EMPTY" }
@@ -334,6 +334,34 @@ const JSON = require('JSON');
 
 const SEEN_KEY = 'clicktrail_gtm_seen_events';
 const MAX_SEEN = 20;
+const LEGACY_EVENT_NAMES = {
+  'lead': 'lead_created',
+  'form.started': 'form_started',
+  'form.submitted': 'lead_created',
+  'lead.submitted': 'lead_created',
+  'lead_submitted': 'lead_created',
+  'form_submission': 'lead_created',
+  'lead.attribution_attached': 'lead_created',
+  'lead.stage_updated': 'lead_updated',
+  'lead.merged': 'lead_merged',
+  'visitor.anonymized': 'visitor_anonymized',
+  'lead.qualified': 'lead_qualified',
+  'booking': 'booking_created',
+  'appointment.booked': 'booking_created',
+  'appointment.requested': 'booking_created',
+  'appointment.attended': 'booking_completed',
+  'appointment.completed': 'booking_completed',
+  'sale.completed': 'sale',
+  'sale.recorded': 'sale',
+  'purchase': 'sale',
+  'revenue.recurring': 'sale',
+  'offline_conversion.sent': 'sale',
+  'sale.refunded': 'refund',
+  'refund.issued': 'refund',
+  'consent.granted': 'consent_updated',
+  'consent.withdrawn': 'consent_updated',
+  'consent.policy_updated': 'consent_updated'
+};
 
 function toNumber(value) {
   if (value === undefined || value === null || value === '') return undefined;
@@ -370,7 +398,7 @@ if (data.eventId) {
 }
 
 /* --- build canonical payload ---------------------------------------- */
-const event = { name: data.eventName };
+const event = { name: LEGACY_EVENT_NAMES[data.eventName] || data.eventName };
 if (data.eventId) event.id = data.eventId;
 if (data.objectType && data.objectType !== 'none') {
   event.object_type = data.objectType;
@@ -422,7 +450,20 @@ data.gtmOnSuccess();
 
 ___TESTS___
 
-scenarios: []
+scenarios:
+- name: Legacy event names normalize before the dataLayer push
+  code: |-
+    let pushed;
+    mock('createQueue', () => ({ push: value => { pushed = value; } }));
+
+    runCode({
+      siteId: 'site-1',
+      eventName: 'sale.completed',
+      includePageData: false,
+      gtmOnSuccess: () => {}
+    });
+
+    assertThat(pushed.clicktrail_event.event.name).isEqualTo('sale');
 
 
 ___NOTES___

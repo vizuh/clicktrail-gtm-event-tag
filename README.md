@@ -28,7 +28,7 @@ fire pixels, or touch cookies.
 | Parameter | Required | Notes |
 |---|---|---|
 | ClickTrail Site ID | yes | Site/tenant ID from ClickTrail settings |
-| Event Name | yes | e.g. `lead.submitted`, `appointment.booked`, `sale.completed` |
+| Event Name | yes | One canonical name: `page_view`, `form_started`, `lead_created`, `lead_qualified`, `booking_created`, `booking_completed`, `sale`, `refund`, `consent_updated` |
 | Event ID | no | Unique per occurrence; duplicates are suppressed client-side and deduplicated downstream |
 | Object Type / ID | no | `lead`, `booking`, `order`, `contact` + its identifier |
 | Value / Currency | no | Numeric value + ISO 4217 code |
@@ -44,7 +44,7 @@ fire pixels, or touch cookies.
   "source": "gtm",
   "site_id": "<site id>",
   "event": {
-    "name": "lead.submitted",
+    "name": "lead_created",
     "id": "<event id>",
     "object_type": "lead",
     "object_id": "<lead id>",
@@ -56,6 +56,9 @@ fire pixels, or touch cookies.
   "properties": { "...": "custom properties" }
 }
 ```
+
+Legacy dotted names remain accepted during migration and normalize before the
+dataLayer push; custom names pass through unchanged.
 
 ## Install & submit
 
