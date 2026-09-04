@@ -1,6 +1,9 @@
 homepage: "https://github.com/vizuh/clicktrail-gtm-event-tag"
 documentation: "https://github.com/vizuh/clicktrail-gtm-event-tag#readme"
 versions:
+  # Version 2
+  - sha: 96f5e8b0cad34ed143a7d6bc5af5872f5ecbab6f
+    changeNotes: Normalize legacy event names to canonical ClickTrail event names.
   # Version 1
   - sha: d068b86c72ddd6da1e2cf21c8fee2bfe5bfdb0c4
     changeNotes: Initial release.
