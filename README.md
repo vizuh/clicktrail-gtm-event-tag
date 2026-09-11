@@ -1,12 +1,14 @@
 # clicktrail-gtm-event-tag
 
 [ClickTrail](https://wordpress.org/plugins/click-trail-handler/) Event Tag for
-Google Tag Manager — a [Community Template Gallery][gallery] submission.
+Google Tag Manager. This is a [Community Template Gallery][gallery] submission.
 
-Sends lead, booking, order and contact events as a canonical,
-schema-versioned ClickTrail payload. The tag **pushes to the page
-`dataLayer`** under the `clicktrail` event name; it does not inject scripts,
-fire pixels, or touch cookies.
+**Move a configured canonical ClickTrail event into the site-owned
+`dataLayer`.**
+
+The tag builds a schema-versioned payload for the selected event and pushes it
+under the `clicktrail` event name. It does not inject scripts, fire pixels,
+touch cookies, configure vendor accounts, or prove destination delivery.
 
 [gallery]: https://developers.google.com/tag-platform/tag-manager/templates/gallery
 
@@ -90,7 +92,7 @@ section. Keep both files in sync on every change.
 
 ## License
 
-Apache License 2.0 — see [LICENSE](LICENSE).
+Apache License 2.0; see [LICENSE](LICENSE).
 
 ### GTM Gallery Status
 ⚪ Not listed yet
