@@ -1,7 +1,9 @@
 # clicktrail-gtm-event-tag
 
-[ClickTrail](https://wordpress.org/plugins/click-trail-handler/) Event Tag for
-Google Tag Manager — a [Community Template Gallery][gallery] submission.
+> **ClickTrail is the open-source attribution handoff layer that keeps observed acquisition context attached to conversion records inside the stack you own.**
+
+This template exposes that handoff to a site-owned Google Tag Manager
+`dataLayer`; it does not inject provider pixels or certify downstream delivery.
 
 Sends lead, booking, order and contact events as a canonical,
 schema-versioned ClickTrail payload. The tag **pushes to the page
