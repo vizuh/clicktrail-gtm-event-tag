@@ -62,6 +62,32 @@ fire pixels, or touch cookies.
 Legacy dotted names remain accepted during migration and normalize before the
 dataLayer push; custom names pass through unchanged.
 
+## Forwarding to GA4: reserved field names and catch-all tags
+
+If GA4 Event tags read the `clicktrail` push, **never use a Google tag field
+name as an event parameter name**:
+
+`session_id`, `client_id`, `user_id`, `session_number`,
+`engagement_time_msec`, `timestamp_micros`, `page_location`, `page_referrer`.
+
+The Google tag reads these as its own fields, not as custom parameters. For
+example, a `session_id` parameter is sent as GA4's session (`sid`) and
+overrides the `_ga_<property>` session cookie. GA4 then reports sessions
+without `session_start`, traffic source `(not set)`, and conversions land in
+Unassigned. Use a prefixed name such as `ct_session_id` instead. The same
+rule applies to names you add under *Custom Event Properties* and forward.
+
+**Catch-all GA4 Event tags.** A common setup is one GA4 Event tag with event
+name `{{Event}}` that fires on every custom event except `gtm.*`. That tag
+would also send a GA4 event named `clicktrail`. If the ClickTrail browser
+SDK runs on the same page, it would also forward the SDK's `ct_page_view` push.
+Exclude both (`{{Event}}` does not match RegEx
+`^(gtm\..*|clicktrail|ct_page_view)$`). Forward ClickTrail events from a
+dedicated tag that reads `clicktrail_event.event.name` instead. Skip
+`page_view` there: the Google tag already sends its own page views.
+
+Background: [vizuh/clicktrail-js#48](https://github.com/vizuh/clicktrail-js/issues/48).
+
 ## Install & submit
 
 1. In Google Tag Manager: **Templates → Import** → select `template.tpl`.
