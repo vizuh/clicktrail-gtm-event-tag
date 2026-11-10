@@ -390,11 +390,13 @@ if (data.eventId) {
   if (!seen || typeof seen.indexOf !== 'function') seen = [];
   if (seen.indexOf(data.eventId) >= 0) {
     if (data.debug) log('ClickTrail: duplicate event suppressed (' + data.eventId + ').');
+    // A suppressed duplicate is a successful no-op; tag sequencing must continue.
+    data.gtmOnSuccess();
     return;
   }
   seen.push(data.eventId);
   if (seen.length > MAX_SEEN) seen = seen.slice(seen.length - MAX_SEEN);
-  setInWindow(SEEN_KEY, seen, false);
+  setInWindow(SEEN_KEY, seen, true);
 }
 
 /* --- build canonical payload ---------------------------------------- */
@@ -464,6 +466,54 @@ scenarios:
     });
 
     assertThat(pushed.clicktrail_event.event.name).isEqualTo('sale');
+- name: Repeated event ids are suppressed after the first id and still complete
+  code: |-
+    fire('a');
+    fire('b');
+    fire('b');
+
+    assertThat(pushes.length).isEqualTo(2);
+    assertThat(pushes[1].clicktrail_event.event.id).isEqualTo('b');
+    assertThat(successes).isEqualTo(3);
+- name: Dedupe buffer keeps only the last 20 ids
+  code: |-
+    for (let i = 0; i <= 20; i++) fire('e' + i);
+
+    assertThat(win.clicktrail_gtm_seen_events.length).isEqualTo(20);
+    assertThat(win.clicktrail_gtm_seen_events[0]).isEqualTo('e1');
+
+    fire('e20');
+    assertThat(pushes.length).isEqualTo(21);
+    fire('e0');
+    assertThat(pushes.length).isEqualTo(22);
+    assertThat(successes).isEqualTo(23);
+- name: Events without an id are never deduped
+  code: |-
+    fire();
+    fire();
+
+    assertThat(pushes.length).isEqualTo(2);
+    assertThat(successes).isEqualTo(2);
+setup: |-
+  // Window mocks follow the documented sandbox semantics: copyFromWindow
+  // returns a copy, setInWindow without overrideExisting keeps the old value.
+  const win = {};
+  const pushes = [];
+  let successes = 0;
+  mock('copyFromWindow', key => win[key] === undefined ? undefined : win[key].slice());
+  mock('setInWindow', (key, value, overrideExisting) => {
+    if (!overrideExisting && win[key] !== undefined) return false;
+    win[key] = value.slice();
+    return true;
+  });
+  mock('createQueue', () => ({ push: value => { pushes.push(value); } }));
+  const fire = eventId => runCode({
+    siteId: 'site-1',
+    eventName: 'lead_created',
+    eventId: eventId,
+    includePageData: false,
+    gtmOnSuccess: () => { successes++; }
+  });
 
 
 ___NOTES___
