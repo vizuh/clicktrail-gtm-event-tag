@@ -80,11 +80,13 @@ if (data.eventId) {
   if (!seen || typeof seen.indexOf !== 'function') seen = [];
   if (seen.indexOf(data.eventId) >= 0) {
     if (data.debug) log('ClickTrail: duplicate event suppressed (' + data.eventId + ').');
+    // A suppressed duplicate is a successful no-op; tag sequencing must continue.
+    data.gtmOnSuccess();
     return;
   }
   seen.push(data.eventId);
   if (seen.length > MAX_SEEN) seen = seen.slice(seen.length - MAX_SEEN);
-  setInWindow(SEEN_KEY, seen, false);
+  setInWindow(SEEN_KEY, seen, true);
 }
 
 /* --- build canonical payload ---------------------------------------- */
@@ -125,8 +127,9 @@ if (data.customProperties && data.customProperties.length) {
 }
 
 /* --- deliver --------------------------------------------------------- */
-const dataLayer = createQueue('dataLayer');
-dataLayer.push({
+// createQueue returns a push function for window.dataLayer, not the array.
+const dataLayerPush = createQueue('dataLayer');
+dataLayerPush({
   event: 'clicktrail',
   clicktrail_version: '1',
   clicktrail_event: payload
