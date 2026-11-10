@@ -127,8 +127,9 @@ if (data.customProperties && data.customProperties.length) {
 }
 
 /* --- deliver --------------------------------------------------------- */
-const dataLayer = createQueue('dataLayer');
-dataLayer.push({
+// createQueue returns a push function for window.dataLayer, not the array.
+const dataLayerPush = createQueue('dataLayer');
+dataLayerPush({
   event: 'clicktrail',
   clicktrail_version: '1',
   clicktrail_event: payload

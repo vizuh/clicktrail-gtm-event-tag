@@ -437,8 +437,9 @@ if (data.customProperties && data.customProperties.length) {
 }
 
 /* --- deliver --------------------------------------------------------- */
-const dataLayer = createQueue('dataLayer');
-dataLayer.push({
+// createQueue returns a push function for window.dataLayer, not the array.
+const dataLayerPush = createQueue('dataLayer');
+dataLayerPush({
   event: 'clicktrail',
   clicktrail_version: '1',
   clicktrail_event: payload
@@ -456,7 +457,7 @@ scenarios:
 - name: Legacy event names normalize before the dataLayer push
   code: |-
     let pushed;
-    mock('createQueue', () => ({ push: value => { pushed = value; } }));
+    mock('createQueue', () => value => { pushed = value; });
 
     runCode({
       siteId: 'site-1',
@@ -496,7 +497,8 @@ scenarios:
     assertThat(successes).isEqualTo(2);
 setup: |-
   // Window mocks follow the documented sandbox semantics: copyFromWindow
-  // returns a copy, setInWindow without overrideExisting keeps the old value.
+  // returns a copy, setInWindow without overrideExisting keeps the old value,
+  // createQueue returns a push function (not an array).
   const win = {};
   const pushes = [];
   let successes = 0;
@@ -506,7 +508,7 @@ setup: |-
     win[key] = value.slice();
     return true;
   });
-  mock('createQueue', () => ({ push: value => { pushes.push(value); } }));
+  mock('createQueue', () => value => { pushes.push(value); });
   const fire = eventId => runCode({
     siteId: 'site-1',
     eventName: 'lead_created',
